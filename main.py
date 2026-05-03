@@ -657,6 +657,7 @@ async def broadcast(_, msg):
             
     log_event(f"⏳️ 𝗕𝗿𝗼𝗮𝗱𝗰𝗮𝘀𝘁 𝗦𝗲𝗻𝘁: {text[:30]}")
 
+    await msg.reply(
         f"⏳️ 𝗕𝗿𝗼𝗮𝗱𝗰𝗮𝘀𝘁 𝗖𝗼𝗺𝗽𝗹𝗲𝘁𝗲𝗱\n\n"
         f"◇ Tᴏᴛᴀʟ Usᴇʀs: {total}\n"
         f"◇ Sᴜᴄᴄᴇssғᴜʟ: {success}\n"
