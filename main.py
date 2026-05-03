@@ -193,27 +193,6 @@ async def start(_, message):
     except:
         pass
 
-    # ---------------- STICKER ----------------
-    try:
-        await message.reply_sticker(
-            "CAACAgUAAxkBAAEXm-JplJOyujCdKOZhh8m5gC4BJpW52AACaxwAA2epVnjNNttcc5jLHgQ"
-        )
-    except:
-        pass
-
-    # ---------------- BUTTONS ----------------
-    buttons = InlineKeyboardMarkup([
-        [InlineKeyboardButton("• ᴍʏ ᴀʟʟ ᴄᴏᴍᴍᴀɴᴅs •", callback_data='help')],
-        [
-            InlineKeyboardButton('ᴜᴘᴅᴀᴛᴇs', url=UPDATE_CHANNEL),
-            InlineKeyboardButton('sᴜᴘᴘᴏʀᴛ', url=UPDATE_CHANNEL)
-        ],
-        [
-            InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about'),
-            InlineKeyboardButton('sᴏᴜʀᴄᴇ', callback_data='source')
-        ]
-    ])
-
     await message.reply_text(
         get_home_text(user),
         reply_markup=get_home_buttons(),
