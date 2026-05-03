@@ -151,16 +151,16 @@ async def start(_, message):
     
         user = message.from_user
 
-    try:
-        m = await message.reply_text("Jɪɴᴡᴏᴏ Sᴜɴɢ . .")
-        await asyncio.sleep(0.5)
-        await m.edit_text("🎊")
-        await asyncio.sleep(0.5)
-        await m.edit_text("⚡")
-        await asyncio.sleep(0.5)
-        await m.edit_text("Mᴀsᴛᴇʀ...")
-        await asyncio.sleep(0.4)
-        await m.delete()
+        try:
+            m = await message.reply_text("Jɪɴᴡᴏᴏ Sᴜɴɢ . .")
+            await asyncio.sleep(0.5)
+            await m.edit_text("🎊")
+            await asyncio.sleep(0.5)
+            await m.edit_text("⚡")
+            await asyncio.sleep(0.5)
+            await m.edit_text("Mᴀsᴛᴇʀ...")
+            await asyncio.sleep(0.4)
+            await m.delete()
 
         # sticker
         try:
