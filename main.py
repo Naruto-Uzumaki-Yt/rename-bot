@@ -190,8 +190,8 @@ async def start(_, message):
             disable_web_page_preview=True
         )
 
-    except Exception as e:
-        print("START ERROR:", e)
+        except Exception as e:
+            print("START ERROR:", e)
 # ---------------- CAPTION ----------------
 @bot.on_message(filters.command("set_caption"))
 async def set_caption(_, msg):
