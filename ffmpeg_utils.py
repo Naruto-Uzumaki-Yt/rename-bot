@@ -18,9 +18,8 @@ def add_metadata(input_file, output_file, title, author, artist, audio, subtitle
             stream,
             output_file,
 
-            codec="copy",
-            map_metadata="-1",
-
+            map="0",
+            c="copy",
             **{
                 "metadata": f"title={title}",
                 "metadata:g": f"artist={artist}",
