@@ -229,6 +229,25 @@ def generate_video_thumb(video_path, output):
     except:
         return None
 
+#---------------------------#
+
+def get_video_metadata(path):
+    try:
+        probe = ffmpeg.probe(path)
+        video_stream = next(
+            (s for s in probe["streams"] if s["codec_type"] == "video"),
+            None
+        )
+
+        duration = int(float(probe["format"]["duration"])) if "duration" in probe["format"] else 0
+        width = int(video_stream["width"]) if video_stream else 0
+        height = int(video_stream["height"]) if video_stream else 0
+
+        return duration, width, height
+    except Exception as e:
+        print("Metadata Error:", e)
+        return 0, 0, 0
+
 # ------------------------- #
 
 bot = Client(
@@ -993,6 +1012,11 @@ async def cb(_, query: CallbackQuery):
         # -------- UPLOAD START -------- #
             await query.message.edit_text("📤 Uᴘʟᴏᴀᴅɪɴɢ sᴛᴀʀᴛᴇᴅ...")
 
+            duration, width, height = (0, 0, 0)
+
+            if is_video:
+                duration, width, height = get_video_metadata(final)
+
             start_time = time.time()
             last_edit = 0
   
@@ -1034,9 +1058,12 @@ async def cb(_, query: CallbackQuery):
                         video=final,
                         caption=caption,
                         thumb=thumb_path,
+                        duration=duration,
+                        width=width,
+                        height=height,
                         supports_streaming=True,
                         progress=prog
-                    )
+                    )  
                 else:
                     await msg.reply_document(
                         document=final,
