@@ -692,16 +692,21 @@ async def tokens_cmd(_, msg):
 
 # ---------------- GENTOKEN ---------------- #
 
-TOKEN_GROUP_ID = -1003124317181
-# replace with your support group ID
+# ---------------- GENTOKEN ---------------- #
 
-@bot.on_message(filters.command("gentoken") & filters.group)
+TOKEN_GROUP_ID = -1003124317181
+
+@bot.on_message(filters.command(["gentoken", f"gentoken@{bot.me.username}"]) & filters.group)
 async def gen_token(_, msg):
+
+    print("GENTOKEN DETECTED")
 
     try:
 
-        # allow only your group
-        if msg.chat.id != TOKEN_GROUP_ID:
+        print("CHAT ID =", msg.chat.id)
+        print("ALLOWED =", TOKEN_GROUP_ID)
+
+        if int(msg.chat.id) != int(TOKEN_GROUP_ID):
             return await msg.reply(
                 "❌ GᴇɴTᴏᴋᴇɴ Oɴʟʏ Wᴏʀᴋs Iɴ Oғғɪᴄɪᴀʟ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ"
             )
@@ -735,7 +740,8 @@ async def gen_token(_, msg):
 
         total = user_tokens[user_id]
 
-        text = f"""
+        await animation.edit_text(
+            f"""
 ✦ 𝗖𝗥𝗘𝗗𝗜𝗧𝗦 𝗖𝗟𝗔𝗜𝗠𝗘𝗗!
 
 ◍ ᴘʀᴇᴠ ᴛᴏᴋᴇɴs: {prev}
@@ -744,8 +750,7 @@ async def gen_token(_, msg):
 
 ⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ.
 """
-
-        await animation.edit_text(text)
+        )
 
     except Exception as e:
         print("GENTOKEN ERROR:", e)
