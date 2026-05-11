@@ -705,8 +705,10 @@ async def gen_token(_, msg):
     try:
 
         if not msg.from_user:
-            print("❌ GENTOKEN IGNORED")
-            return  # silently ignore (BEST PRACTICE)
+            print("❌ GENTOKEN IGNORED (anonymous/system message)")
+            return await msg.reply(
+                 "❌ Please disable anonymous admin mode and try again"
+            )
 
         user_id = msg.from_user.id
 
