@@ -687,71 +687,55 @@ async def tokens_cmd(_, msg):
 • Rᴇғᴇʀ ғʀɪᴇɴᴅs ᴠɪᴀ /refer ғᴏʀ ᴘᴇʀᴍᴀɴᴇɴᴛ ᴛᴏᴋᴇɴs.
 ≡ ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ʀᴇɴᴀᴍᴇs
 """
+    
+    await msg.reply(text)
 
-    buttons = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton(
-                    "🎁 Claim Daily Reward",
-                    callback_data="daily_token"
-                )
-            ]
-        ]
-    )
+# ---------------- GENTOKEN ---------------- #
 
-    await msg.reply(text, reply_markup=buttons)
-
-@bot.on_callback_query(filters.regex("daily_token"))
-async def daily_token(_, query):
-
-    user_id = query.from_user.id
-
-    if user_id not in user_tokens:
-        user_tokens[user_id] = 0
-
-    if user_id not in user_streaks:
-        user_streaks[user_id] = 0
-
-    user_tokens[user_id] += 20
-    user_streaks[user_id] += 1
-
-    await query.message.edit_text(
-        f"""
-🎁 Dᴀɪʟʏ Rᴇᴡᴀʀᴅ Cʟᴀɪᴍᴇᴅ!
-
-◍ +20 Tᴏᴋᴇɴs Aᴅᴅᴇᴅ
-◍ Tᴏᴛᴀʟ Tᴏᴋᴇɴs: {user_tokens[user_id]}
-◍ Sᴛʀᴇᴀᴋ: {user_streaks[user_id]} Dᴀʏs
-"""
-    )
+TOKEN_GROUP_ID = -1003555163972
+# replace with your support group ID
 
 @bot.on_message(filters.command("gentoken") & filters.group)
 async def gen_token(_, msg):
 
-    user_id = msg.from_user.id
+    try:
 
-    if user_id not in user_tokens:
-        user_tokens[user_id] = 0
+        # allow only your group
+        if msg.chat.id != TOKEN_GROUP_ID:
+            return await msg.reply(
+                "❌ GᴇɴTᴏᴋᴇɴ Oɴʟʏ Wᴏʀᴋs Iɴ Oғғɪᴄɪᴀʟ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ"
+            )
 
-    prev = user_tokens[user_id]
+        user_id = msg.from_user.id
 
-    animation = await msg.reply("🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs...")
+        if user_id not in user_tokens:
+            user_tokens[user_id] = 0
 
-    await asyncio.sleep(1)
+        prev = user_tokens[user_id]
 
-    await animation.edit_text("⚡ Pʀᴏᴄᴇssɪɴɢ...")
+        animation = await msg.reply(
+            "🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs..."
+        )
 
-    await asyncio.sleep(1)
+        await asyncio.sleep(1)
 
-    await animation.edit_text("✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs...")
+        await animation.edit_text(
+            "⚡ Pʀᴏᴄᴇssɪɴɢ..."
+        )
 
-    await asyncio.sleep(1)
+        await asyncio.sleep(1)
 
-    user_tokens[user_id] += 50
+        await animation.edit_text(
+            "✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs..."
+        )
 
-    total = user_tokens[user_id]
+        await asyncio.sleep(1)
 
-    text = f"""
+        user_tokens[user_id] += 50
+
+        total = user_tokens[user_id]
+
+        text = f"""
 ✦ 𝗖𝗥𝗘𝗗𝗜𝗧𝗦 𝗖𝗟𝗔𝗜𝗠𝗘𝗗!
 
 ◍ ᴘʀᴇᴠ ᴛᴏᴋᴇɴs: {prev}
@@ -761,7 +745,10 @@ async def gen_token(_, msg):
 ⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ.
 """
 
-    await animation.edit_text(text)
+        await animation.edit_text(text)
+
+    except Exception as e:
+        print("GENTOKEN ERROR:", e)
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
