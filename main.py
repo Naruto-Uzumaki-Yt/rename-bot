@@ -439,22 +439,81 @@ async def myplan(_, msg):
     user = await get_user(msg.from_user.id) or {}
     status = "Premium" if user.get("premium") else "Free"
 
+    # token info
+    user_id = msg.from_user.id
+
+    if user_id not in user_tokens:
+        user_tokens[user_id] = 0
+
+    tokens = user_tokens[user_id]
+
     if status == "Premium":
-        text = f"✨ ʜᴇʏ {msg.from_user.first_name},\n\n"
-        text += "💎 Yᴏᴜ ᴄᴜʀʀᴇɴᴛʟʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ **Pʀᴇᴍɪᴜᴍ Pʟᴀɴ** ✔\n"
-        text += "❤️ Tʜᴀɴᴋs Fᴏʀ Bᴜʏɪɴɢ Pʀᴇᴍɪᴜᴍ!"
+
+        expiry = user.get("premium_expiry")
+
+        if expiry:
+            remaining = expiry - int(time.time())
+
+            days = remaining // 86400
+            hours = (remaining % 86400) // 3600
+
+            expiry_text = f"{days}D {hours}H Remaining"
+        else:
+            expiry_text = "Unlimited"
+
+        text = f"""
+✨ ʜᴇʏ {msg.from_user.first_name},
+
+💎 Yᴏᴜ ᴄᴜʀʀᴇɴᴛʟʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ Pʀᴇᴍɪᴜᴍ Pʟᴀɴ ✔
+
+◍ Sᴛᴀᴛᴜs : Pʀᴇᴍɪᴜᴍ ᴜsᴇʀ
+◍ Tᴏᴋᴇɴs : Uɴʟɪᴍɪᴛᴇᴅ ♾
+◍ Exᴘɪʀʏ : {expiry_text}
+
+🚀 𝗣ʀᴇᴍɪᴜᴍ 𝗕ᴇɴᴇғɪᴛ𝘀 :
+› 𝗨𝗻𝗹𝗶𝗺𝗶𝘁𝗲𝗱 𝗥𝗲𝗻𝗮𝗺𝗲𝘀
+› 𝗙𝗮𝘀𝘁𝗲𝗿 𝗨𝗽𝗹𝗼𝗮𝗱 𝗦𝗽𝗲𝗲𝗱
+› 𝗥𝗲𝗻𝗮𝗺𝗲 𝗨𝗽𝘁𝗼 𝟮𝗚𝗕
+› 𝗡𝗼 𝗗𝗮𝗶𝗹𝘆 𝗟𝗶𝗺𝗶𝘁𝘀
+
+❤️ Tʜᴀɴᴋs Fᴏʀ Bᴜʏɪɴɢ Pʀᴇᴍɪᴜᴍ!
+"""
+
     else:
-        text = f"ʜᴇʏ {msg.from_user.first_name},\n\n"
-        text += "𝒀𝒐𝒖 𝑫𝒐 𝑵𝒐𝒕 𝑯𝒂𝒗𝒆 𝑨𝒏𝒚 𝑨𝒄𝒕𝒊𝒗𝒆 𝑷𝒓𝒆𝒎𝒊𝒖𝒎 𝒑𝒍𝒂𝒏𝒔,\n"
-        text += "𝑰𝒇 𝒀𝒐𝒖 𝑾𝒂𝒏𝒕 𝑻𝒐 𝑻𝒂𝒌𝒆 𝑷𝒓𝒆𝒎𝒊𝒖𝒎 𝑻𝒉𝒆𝒏 𝑪𝒍𝒊𝒄𝒌 𝑶𝒏 𝑩𝒆𝒍𝒐𝒘 𝑩𝒖𝒕𝒕𝒐𝒏 👇"
+
+        text = f"""
+👋 ʜᴇʏ {msg.from_user.first_name},
+
+❌ Yᴏᴜ Dᴏ Nᴏᴛ Hᴀᴠᴇ Aɴʏ Aᴄᴛɪᴠᴇ Pʀᴇᴍɪᴜᴍ Pʟᴀɴ
+
+◍ Sᴛᴀᴛᴜs : Fʀᴇᴇ Usᴇʀ
+◍ Tᴏᴋᴇɴs : {tokens}
+
+⚠️ 𝖥𝗋𝖾𝖾 𝖴𝗌𝖾𝗋𝗌 𝖭𝖾𝖾𝖽 𝖳𝗈𝗄𝖾𝗇𝗌 𝖥𝗈𝗋 𝖱𝖾𝗇𝖺𝗆𝗂𝗇𝗀
+
+⧗ Hᴏᴡ Tᴏ Gᴇᴛ Tᴏᴋᴇɴs?
+• Usᴇ /gentoken ɪɴ ɢʀᴏᴜᴘs
+• Cʟᴀɪᴍ ᴅᴀɪʟʏ ʀᴇᴡᴀʀᴅs
+• Rᴇғᴇʀ ғʀɪᴇɴᴅs
+
+🚀 Uᴘɢʀᴀᴅᴇ Tᴏ Pʀᴇᴍɪᴜᴍ Fᴏʀ:
+› Uɴʟɪᴍɪᴛᴇᴅ Rᴇɴᴀᴍᴇs
+› Rᴇɴᴀᴍᴇ Uᴘᴛᴏ 𝟸GB
+› Fᴀsᴛᴇʀ Sᴘᴇᴇᴅ
+› Nᴏ Tᴏᴋᴇɴ Lɪᴍɪᴛs
+"""
 
     buttons = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("○ Bᴜʏ Pʀᴇᴍɪᴜᴍ ○", url="https://t.me/Mr_Mohammed_29")
+            InlineKeyboardButton(
+                "💎 Bᴜʏ Pʀᴇᴍɪᴜᴍ",
+                url="https://t.me/Mr_Mohammed_29"
+            )
         ]
     ])
 
     await msg.reply(text, reply_markup=buttons)
+
 # ------------ plans ---------------#
 @bot.on_message(filters.command("plans"))
 async def plans(_, msg):
@@ -462,18 +521,34 @@ async def plans(_, msg):
     text = f"""
 👋 ʜᴇʏ {msg.from_user.first_name},
 
-🎁 ᴘʀᴇᴍɪᴜᴍ ғᴇᴀᴛᴜʀᴇs :
+💎 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗣𝗟𝗔𝗡𝗦
 
-››  ᴜɴʟɪᴍɪᴛᴇᴅ ʀᴇɴᴀᴍɪɴɢ: ɴᴏ ʟɪᴍɪᴛꜱ ᴏɴ ꜰɪʟᴇꜱ  
-››  ᴇᴀʀʟʏ ᴀᴄᴄᴇꜱꜱ: ᴛʀʏ ɴᴇᴡ ꜰᴇᴀᴛᴜʀᴇꜱ ꜰɪʀꜱᴛ  
-››  ꜰᴀꜱᴛᴇʀ ꜱᴘᴇᴇᴅ: Qᴜɪᴄᴋᴇʀ ᴅᴏᴡɴʟᴏᴀᴅꜱ ᴀɴᴅ ᴜᴘʟᴏᴀᴅꜱ  
+🚀 Pʀᴇᴍɪᴜᴍ Fᴇᴀᴛᴜʀᴇs :
 
-➛ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ ʙʏ ᴜꜱɪɴɢ : /myplan
+› Uɴʟɪᴍɪᴛᴇᴅ Rᴇɴᴀᴍɪɴɢ
+› Rᴇɴᴀᴍᴇ Uᴘᴛᴏ 𝟸GB Fɪʟᴇs
+› Nᴏ Tᴏᴋᴇɴ Lɪᴍɪᴛs
+› Fᴀsᴛᴇʀ Uᴘʟᴏᴀᴅ & Dᴏᴡɴʟᴏᴀᴅ
+› Eᴀʀʟʏ Aᴄᴄᴇss Fᴇᴀᴛᴜʀᴇs
+› Pʀᴇᴍɪᴜᴍ Sᴜᴘᴘᴏʀᴛ
+
+🎟 Fʀᴇᴇ Usᴇʀs:
+• Nᴇᴇᴅ Tᴏᴋᴇɴs Fᴏʀ Rᴇɴᴀᴍᴇ
+• Usᴇ /ɢᴇɴᴛᴏᴋᴇɴ Tᴏ Eᴀʀɴ Tᴏᴋᴇɴs
+
+💡 Cᴏᴍᴍᴀɴᴅs:
+➛ /token - Cʜᴇᴄᴋ Tᴏᴋᴇɴ Bᴀʟᴀɴᴄᴇ
+➛ /myplan - Cʜᴇᴄᴋ Yᴏᴜʀ Pʟᴀɴ
+
+⚡ Uᴘɢʀᴀᴅᴇ Nᴏᴡ Aɴᴅ Eɴɪᴏʏ Uɴʟɪᴍɪᴛᴇᴅ Rᴇɴᴀᴍɪɴɢ!
 """
 
     buttons = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("○ Uᴘɢʀᴀᴅᴇ Tᴏ Pʀᴇᴍɪᴜᴍ ○", url="https://t.me/Mr_Mohammed_29")
+            InlineKeyboardButton(
+                "💎 Uᴘɢʀᴀᴅᴇ Tᴏ Pʀᴇᴍɪᴜᴍ",
+                url="https://t.me/Mr_Mohammed_29"
+            )
         ]
     ])
 
@@ -580,7 +655,7 @@ async def del_dump(_, msg):
 
 # ---------------- TOKENS ---------------- #
 
-@bot.on_message(filters.command("tokens"))
+@bot.on_message(filters.command(["token", "tokens"]))
 async def tokens_cmd(_, msg):
 
     user_id = msg.from_user.id
@@ -1064,6 +1139,35 @@ async def cb(_, query: CallbackQuery):
  
             file = msg.document or msg.video
             is_video = msg.video is not None  
+
+            # -------- TOKEN CHECK -------- #
+
+            user_data = await get_user(user_id) or {}
+            is_premium = user_data.get("premium", False)
+
+            if user_id not in user_tokens:
+                user_tokens[user_id] = 0
+
+            # Free users need token
+            if not is_premium:
+
+                if user_tokens[user_id] <= 0:
+                    return await query.message.edit_text(
+                        f"""
+            ❌ 𝗡𝗢 𝗧𝗢𝗞𝗘𝗡𝗦 𝗟𝗘𝗙𝗧!
+
+            ◍ Yᴏᴜʀ Tᴏᴋᴇɴs: {user_tokens[user_id]}
+            ◍ Sᴛᴀᴛᴜs: Free User
+
+            ⧗ Hᴏᴡ ᴛᴏ ɢᴇᴛ ᴍᴏʀᴇ?
+            • Usᴇ /gentoken ɪɴ ɢʀᴏᴜᴘ
+            • Cʟᴀɪᴍ ᴅᴀɪʟʏ ʀᴇᴡᴀʀᴅ
+            • Bᴜʏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ʀᴇɴᴀᴍᴇs
+            """
+                    )
+
+                # remove 1 token per rename
+                user_tokens[user_id] -= 1
 
             log_event(f"User {user_id} uploaded file: {file.file_name}")
 
