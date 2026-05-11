@@ -704,24 +704,25 @@ async def gen_token(_, msg):
     try:
 
         if not msg.from_user:
-            return await msg.reply("❌ Cannot process anonymous/system messages")
-
-        if int(msg.chat.id) != int(TOKEN_GROUP_ID):
-            return await msg.reply(
-                "❌ GᴇɴTᴏᴋᴇɴ Oɴʟʏ Wᴏʀᴋs Iɴ Oғғɪᴄɪᴀʟ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ"
-            )
+            print("❌ GENTOKEN IGNORED")
+            return  # silently ignore (BEST PRACTICE)
 
         user_id = msg.from_user.id
 
-        # 🔥 FIXED DAILY CHECK (clean version)
+        print("GENTOKEN DETECTED")
+        print("CHAT ID =", msg.chat.id)
+
+        if int(msg.chat.id) != int(TOKEN_GROUP_ID):
+            return await msg.reply("❌ GᴇɴTᴏᴋᴇɴ Oɴʟʏ Wᴏʀᴋs Iɴ Oғғɪᴄɪᴀʟ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ @AU_Bot_Discussion")
+
         today = datetime.date.today()
 
-        if user_gentoken_time.get(user_id) == today:
-            return await msg.reply(
-                "ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍᴇᴅ ʏᴏᴜʀ ғʀᴇᴇ ᴛᴏᴋᴇɴs ᴛᴏᴅᴀʏ! ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏᴍᴏʀʀᴏᴡ... 🙃"
-            )
+        if user_id in user_gentoken_time:
+            if user_gentoken_time[user_id] == today:
+                return await msg.reply(
+                    "ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍᴇᴅ ʏᴏᴜʀ ғʀᴇᴇ ᴛᴏᴋᴇɴs ᴛᴏᴅᴀʏ! ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏᴍᴏʀʀᴏᴡ... 🙃"
+                )
 
-        # mark today claimed
         user_gentoken_time[user_id] = today
 
         if user_id not in user_tokens:
