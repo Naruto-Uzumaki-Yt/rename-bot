@@ -692,7 +692,7 @@ async def tokens_cmd(_, msg):
 
 # ---------------- GENTOKEN ---------------- #
 
-TOKEN_GROUP_ID = -1003555163972
+TOKEN_GROUP_ID = -1003124317181
 # replace with your support group ID
 
 @bot.on_message(filters.command("gentoken") & filters.group)
