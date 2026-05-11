@@ -1099,71 +1099,71 @@ async def cb(_, query: CallbackQuery):
                 except:
                     pass
            # -------- SEND FILE -------- #
-           try:
-               if mode == "video":
-                   await msg.reply_video(
-                       video=final,
-                       file_name=new_name,
-                       caption=caption,
-                       thumb=thumb_path,
-                       duration=duration,
-                       width=width,
-                       height=height,
-                       supports_streaming=True,
-                       progress=prog
-                   )  
-
-                   dump_id = dump_channels.get(user_id)
-
-                   if dump_id:
-                       try:
-                           await bot.copy_message(
-                               chat_id=int(dump_id),
-                  
-           from_chat_id=msg.chat.id,
-                               message_id=msg.id
-                           )
-
-                       except Exception as e:
-                           print("Dump Error:", e)
-
-               else:
-                    await msg.reply_document(
-                        document=final,
+            try:
+                if mode == "video":
+                    await msg.reply_video(
+                        video=final,
                         file_name=new_name,
                         caption=caption,
                         thumb=thumb_path,
+                        duration=duration,
+                        width=width,
+                        height=height,
+                        supports_streaming=True,
                         progress=prog
-                    )
-        
+                    )  
+
                     dump_id = dump_channels.get(user_id)
 
                     if dump_id:
                         try:
-                             await bot.send_document(
-                                 chat_id=int(dump_id),
-                                 document=final,
-                                 file_name=new_name,
-                                 caption=caption,
-                                 thumb=thumb_path
-                             ) 
+                            await bot.copy_message(
+                                chat_id=int(dump_id),
+                  
+            from_chat_id=msg.chat.id,
+                                message_id=msg.id
+                            )
 
                         except Exception as e:
                             print("Dump Error:", e)
 
-           except Exception:
-               await query.message.edit_text("❌ Uᴘʟᴏᴀᴅ Cᴀɴᴄᴇʟʟᴇᴅ")
-               return
+                else:
+                     await msg.reply_document(
+                         document=final,
+                         file_name=new_name,
+                         caption=caption,
+                         thumb=thumb_path,
+                         progress=prog
+                     )
+        
+                     dump_id = dump_channels.get(user_id)
+
+                     if dump_id:
+                         try:
+                              await bot.send_document(
+                                  chat_id=int(dump_id),
+                                  document=final,
+                                  file_name=new_name,
+                                  caption=caption,
+                                  thumb=thumb_path
+                              )  
+
+                         except Exception as e:
+                             print("Dump Error:", e)
+
+            except Exception:
+                await query.message.edit_text("❌ Uᴘʟᴏᴀᴅ Cᴀɴᴄᴇʟʟᴇᴅ")
+                return
     
-               try:
-                   await query.message.edit_text(
-                       "Eʀʀᴏʀ ‼️, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ @Mr_Mohammed_29"
-                   )
+                try:
+                    await query.message.edit_text(
+                        "Eʀʀᴏʀ ‼️, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ @Mr_Mohammed_29"
+                    )
 
-               except:
-                   pass
+                except:
+                    pass
 
-               return
+                return
 
 
             # -------- CLEANUP -------- #
