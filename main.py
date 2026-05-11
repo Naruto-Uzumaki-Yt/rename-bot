@@ -696,8 +696,7 @@ async def tokens_cmd(_, msg):
 
 TOKEN_GROUP_ID = -1003124317181
 
-@bot.on_message(filters.command(["gentoken", f"gentoken@{bot.me.username}"]) & filters.group)
-async def gen_token(_, msg):
+@bot.on_message(filters.command("gentoken", prefixes=["/", "!", "."]) & filters.group)
 
     print("GENTOKEN DETECTED")
 
