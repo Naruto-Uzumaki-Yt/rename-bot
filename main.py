@@ -132,6 +132,8 @@ print("UPDATE_CHANNEL:", UPDATE_CHANNEL)
 from database import *
 
 dump_channels = {}
+user_tokens = {}
+user_streaks = {}
 
 from utils import progress_bar
 from ffmpeg_utils import add_metadata
@@ -576,6 +578,115 @@ async def del_dump(_, msg):
 
     await msg.reply("✅ Dump Channel Deleted")
 
+# ---------------- TOKENS ---------------- #
+
+@bot.on_message(filters.command("tokens"))
+async def tokens_cmd(_, msg):
+
+    user_id = msg.from_user.id
+
+    if user_id not in user_tokens:
+        user_tokens[user_id] = 0
+
+    if user_id not in user_streaks:
+        user_streaks[user_id] = 0
+
+    user = await get_user(user_id) or {}
+
+    status = "Premium User" if user.get("premium") else "Free User"
+
+    tokens = user_tokens[user_id]
+    streak = user_streaks[user_id]
+
+    text = f"""
+✦ 𝗝𝗜𝗡-𝗪𝗢𝗢 𝗧𝗢𝗞𝗘𝗡𝗦
+
+◍ Usᴇʀ: {msg.from_user.first_name}
+◍ Bᴀʟᴀɴᴄᴇ: {tokens} Tᴏᴋᴇɴs
+◍ Sᴛʀᴇᴀᴋ: {streak} Dᴀʏs
+◍ Sᴛᴀᴛᴜs: {status}
+
+⧗ Hᴏᴡ ᴛᴏ ᴇᴀʀɴ?
+• Cʟᴀɪᴍ ʏᴏᴜʀ ᴅᴀɪʟʏ ʀᴇᴡᴀʀᴅ ʙᴇʟᴏᴡ!
+• Usᴇ /gentoken ɪɴ ɢʀᴏᴜᴘ ᴛᴏ ɢᴇᴛ 50 ᴛᴏᴋᴇɴs.
+• Rᴇғᴇʀ ғʀɪᴇɴᴅs ᴠɪᴀ /refer ғᴏʀ ᴘᴇʀᴍᴀɴᴇɴᴛ ᴛᴏᴋᴇɴs.
+≡ ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ʀᴇɴᴀᴍᴇs
+"""
+
+    buttons = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "🎁 Claim Daily Reward",
+                    callback_data="daily_token"
+                )
+            ]
+        ]
+    )
+
+    await msg.reply(text, reply_markup=buttons)
+
+@bot.on_callback_query(filters.regex("daily_token"))
+async def daily_token(_, query):
+
+    user_id = query.from_user.id
+
+    if user_id not in user_tokens:
+        user_tokens[user_id] = 0
+
+    if user_id not in user_streaks:
+        user_streaks[user_id] = 0
+
+    user_tokens[user_id] += 20
+    user_streaks[user_id] += 1
+
+    await query.message.edit_text(
+        f"""
+🎁 Dᴀɪʟʏ Rᴇᴡᴀʀᴅ Cʟᴀɪᴍᴇᴅ!
+
+◍ +20 Tᴏᴋᴇɴs Aᴅᴅᴇᴅ
+◍ Tᴏᴛᴀʟ Tᴏᴋᴇɴs: {user_tokens[user_id]}
+◍ Sᴛʀᴇᴀᴋ: {user_streaks[user_id]} Dᴀʏs
+"""
+    )
+
+@bot.on_message(filters.command("gentoken") & filters.group)
+async def gen_token(_, msg):
+
+    user_id = msg.from_user.id
+
+    if user_id not in user_tokens:
+        user_tokens[user_id] = 0
+
+    prev = user_tokens[user_id]
+
+    animation = await msg.reply("🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs...")
+
+    await asyncio.sleep(1)
+
+    await animation.edit_text("⚡ Pʀᴏᴄᴇssɪɴɢ...")
+
+    await asyncio.sleep(1)
+
+    await animation.edit_text("✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs...")
+
+    await asyncio.sleep(1)
+
+    user_tokens[user_id] += 50
+
+    total = user_tokens[user_id]
+
+    text = f"""
+✦ 𝗖𝗥𝗘𝗗𝗜𝗧𝗦 𝗖𝗟𝗔𝗜𝗠𝗘𝗗!
+
+◍ ᴘʀᴇᴠ ᴛᴏᴋᴇɴs: {prev}
+◍ ɴᴇᴡ ᴛᴏᴋᴇɴs ᴀᴅᴅᴇᴅ: 50
+◍ ᴛᴏᴛᴀʟ ᴛᴏᴋᴇɴs: {total}
+
+⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ.
+"""
+
+    await animation.edit_text(text)
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
