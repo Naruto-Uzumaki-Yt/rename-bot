@@ -698,7 +698,8 @@ async def tokens_cmd(_, msg):
 # ---------------- GENTOKEN ---------------- #
 
 TOKEN_GROUP_ID = -1003124317181
-@bot.on_message(filters.command("gentoken") & filters.group)
+
+@bot.on_message(filters.command(["gentoken", "gentoken@Jinwoo_Rename_bot"]))
 async def gen_token(_, msg):
 
     try:
