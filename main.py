@@ -130,6 +130,9 @@ print("LOG_CHANNEL:", LOG_CHANNEL)
 print("UPDATE_CHANNEL:", UPDATE_CHANNEL)
 
 from database import *
+
+dump_channels = {}
+
 from utils import progress_bar
 from ffmpeg_utils import add_metadata
 from keep_alive import keep_alive
@@ -534,6 +537,45 @@ async def setvideo(_, msg):
     text = msg.text.split(None, 1)[1]
     await set_user(msg.from_user.id, {"video": text})
     await msg.reply("✅ Vɪᴅᴇᴏ Mᴇᴛᴀᴅᴀᴛᴀ Sᴀᴠᴇᴅ")
+
+# ---------------- DUMP CHANNEL ---------------- #
+
+@bot.on_message(filters.command("setdump"))
+async def set_dump(_, msg):
+
+    if len(msg.command) < 2:
+        return await msg.reply(
+            "Usage:\n/setdump -100xxxxxxxxxx"
+        )
+
+    channel_id = msg.command[1]
+
+    dump_channels[msg.from_user.id] = channel_id
+
+    await msg.reply(
+        f"✅ Dump Channel Saved\n\nID: `{channel_id}`"
+    )
+
+@bot.on_message(filters.command("chkdump"))
+async def chk_dump(_, msg):
+
+    channel_id = dump_channels.get(msg.from_user.id)
+
+    if not channel_id:
+        return await msg.reply("❌ No Dump Channel Added")
+
+    await msg.reply(
+        f"📦 Current Dump Channel:\n`{channel_id}`"
+    )
+
+@bot.on_message(filters.command("deldump"))
+async def del_dump(_, msg):
+
+    if msg.from_user.id in dump_channels:
+        del dump_channels[msg.from_user.id]
+
+    await msg.reply("✅ Dump Channel Deleted")
+
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
@@ -1070,6 +1112,18 @@ async def cb(_, query: CallbackQuery):
                         supports_streaming=True,
                         progress=prog
                     )  
+
+                    dump_id = dump_channels.get(user_id)
+
+                    if dump_id:
+                        try:
+                            await bot.copy_message(
+                                chat_id=int(dump_id),
+                                from_chat_id=msg.chat.id,
+                                message_id=msg.id
+                            )
+                            except Exception as e:
+                                print("Dump Error:", e)
                 else:
                     await msg.reply_document(
                         document=final,
@@ -1078,6 +1132,19 @@ async def cb(_, query: CallbackQuery):
                         thumb=thumb_path,
                         progress=prog
                     )
+                    dump_id = dump_channels.get(user_id)
+
+                    if dump_id:
+                        try:
+                            await bot.send_document(
+                                chat_id=int(dump_id),
+                                document=final,
+                                file_name=new_name,
+                                caption=caption,
+                                thumb=thumb_path
+                            ) 
+                            except Exception as e:
+                                print("Dump Error:", e)
             except Exception:
                 await query.message.edit_text("❌ Uᴘʟᴏᴀᴅ Cᴀɴᴄᴇʟʟᴇᴅ")
                 return
@@ -1086,6 +1153,7 @@ async def cb(_, query: CallbackQuery):
                     await query.message.edit_text(
                         "Eʀʀᴏʀ ‼️, Cᴏɴᴛᴀᴄᴛ ᴅᴇᴠᴇʟᴏᴘᴇʀ @Mr_Mohammed_29"
                     )
+
                 except:
                     pass
 
