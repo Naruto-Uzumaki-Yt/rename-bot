@@ -655,10 +655,13 @@ async def del_dump(_, msg):
 
     await msg.reply("✅ Dump Channel Deleted")
 
-# ---------------- TOKENS ---------------- #
+# ---------------- TOKEN COMMAND ---------------- #
 
 @bot.on_message(filters.command(["token", "tokens"]))
 async def tokens_cmd(_, msg):
+
+    if not msg.from_user:
+        return await msg.reply("❌ Cannot fetch tokens for anonymous/system messages")
 
     user_id = msg.from_user.id
 
@@ -689,13 +692,12 @@ async def tokens_cmd(_, msg):
 • Rᴇғᴇʀ ғʀɪᴇɴᴅs ᴠɪᴀ /refer ғᴏʀ ᴘᴇʀᴍᴀɴᴇɴᴛ ᴛᴏᴋᴇɴs.
 ≡ ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ʀᴇɴᴀᴍᴇs
 """
-    
+
     await msg.reply(text)
 
 # ---------------- GENTOKEN ---------------- #
 
 TOKEN_GROUP_ID = -1003124317181
-
 @bot.on_message(filters.command("gentoken") & filters.group)
 async def gen_token(_, msg):
 
@@ -711,14 +713,13 @@ async def gen_token(_, msg):
 
         user_id = msg.from_user.id
 
-        # 🔥 DAILY CHECK (NEW PART)
+        # 🔥 FIXED DAILY CHECK (clean version)
         today = datetime.date.today()
 
-        if user_id in user_gentoken_time:
-            if user_gentoken_time[user_id] == today:
-                return await msg.reply(
-                    "ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍᴇᴅ ʏᴏᴜʀ ғʀᴇᴇ ᴛᴏᴋᴇɴs ᴛᴏᴅᴀʏ! ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏᴍᴏʀʀᴏᴡ... 🙃"
-                )
+        if user_gentoken_time.get(user_id) == today:
+            return await msg.reply(
+                "ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍᴇᴅ ʏᴏᴜʀ ғʀᴇᴇ ᴛᴏᴋᴇɴs ᴛᴏᴅᴀʏ! ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏᴍᴏʀʀᴏᴡ... 🙃"
+            )
 
         # mark today claimed
         user_gentoken_time[user_id] = today
@@ -736,7 +737,6 @@ async def gen_token(_, msg):
         await animation.edit_text("✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs...")
 
         user_tokens[user_id] += 50
-
         total = user_tokens[user_id]
 
         await animation.edit_text(
@@ -752,7 +752,7 @@ async def gen_token(_, msg):
         )
 
     except Exception as e:
-        print("GENTOKEN ERROR:", e)
+        print("GENTOKEN ERROR:", repr(e))
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
