@@ -55,6 +55,8 @@ user_mode = {}
 download_last_edit = 0
 upload_last_edit = 0
 
+user_gentoken_time = {}
+
 def parse_duration(value: str):
     value = value.lower().strip()
 
@@ -697,12 +699,10 @@ TOKEN_GROUP_ID = -1003124317181
 @bot.on_message(filters.command("gentoken") & filters.group)
 async def gen_token(_, msg):
 
-    print("GENTOKEN DETECTED")
-
     try:
 
-        print("CHAT ID =", msg.chat.id)
-        print("ALLOWED =", TOKEN_GROUP_ID)
+        if not msg.from_user:
+            return await msg.reply("❌ Cannot process anonymous/system messages")
 
         if int(msg.chat.id) != int(TOKEN_GROUP_ID):
             return await msg.reply(
@@ -711,28 +711,29 @@ async def gen_token(_, msg):
 
         user_id = msg.from_user.id
 
+        # 🔥 DAILY CHECK (NEW PART)
+        today = datetime.date.today()
+
+        if user_id in user_gentoken_time:
+            if user_gentoken_time[user_id] == today:
+                return await msg.reply(
+                    "ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍᴇᴅ ʏᴏᴜʀ ғʀᴇᴇ ᴛᴏᴋᴇɴs ᴛᴏᴅᴀʏ! ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏᴍᴏʀʀᴏᴡ... 🙃"
+                )
+
+        # mark today claimed
+        user_gentoken_time[user_id] = today
+
         if user_id not in user_tokens:
             user_tokens[user_id] = 0
 
         prev = user_tokens[user_id]
 
-        animation = await msg.reply(
-            "🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs..."
-        )
+        animation = await msg.reply("🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs...")
 
         await asyncio.sleep(1)
-
-        await animation.edit_text(
-            "⚡ Pʀᴏᴄᴇssɪɴɢ..."
-        )
-
+        await animation.edit_text("⚡ Pʀᴏᴄᴇssɪɴɢ...")
         await asyncio.sleep(1)
-
-        await animation.edit_text(
-            "✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs..."
-        )
-
-        await asyncio.sleep(1)
+        await animation.edit_text("✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs...")
 
         user_tokens[user_id] += 50
 
@@ -746,7 +747,7 @@ async def gen_token(_, msg):
 ◍ ɴᴇᴡ ᴛᴏᴋᴇɴs ᴀᴅᴅᴇᴅ: 50
 ◍ ᴛᴏᴛᴀʟ ᴛᴏᴋᴇɴs: {total}
 
-⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ.
+⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ
 """
         )
 
