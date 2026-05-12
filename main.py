@@ -696,51 +696,50 @@ async def tokens_cmd(_, msg):
     await msg.reply(text)
 
 # ---------------- GENTOKEN ---------------- #
-
 TOKEN_GROUP_ID = -1003124317181
 
 @bot.on_message(filters.command("gentoken") & filters.group)
 async def gen_token(_, msg):
 
+    if not msg.from_user:
+        return
+
     print("GENTOKEN DETECTED")
+    print("CHAT ID =", msg.chat.id)
 
-    try:
+    if int(msg.chat.id) != int(TOKEN_GROUP_ID):
+        return
 
-        if int(msg.chat.id) != int(TOKEN_GROUP_ID):
-            return await msg.reply(
-                "❌ GᴇɴTᴏᴋᴇɴ Oɴʟʏ Wᴏʀᴋs Iɴ Oғғɪᴄɪᴀʟ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ"
-            )
+    user_id = msg.from_user.id
 
-        user_id = msg.from_user.id
+    if user_id not in user_tokens:
+        user_tokens[user_id] = 0
 
-        if user_id not in user_tokens:
-            user_tokens[user_id] = 0
+    prev = user_tokens[user_id]
 
-        prev = user_tokens[user_id]
+    animation = await msg.reply(
+        "🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs..."
+    )
 
-        animation = await msg.reply(
-            "🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs..."
-        )
+    await asyncio.sleep(1)
 
-        await asyncio.sleep(1)
+    await animation.edit_text(
+        "⚡ Pʀᴏᴄᴇssɪɴɢ..."
+    )
 
-        await animation.edit_text(
-            "⚡ Pʀᴏᴄᴇssɪɴɢ..."
-        )
+    await asyncio.sleep(1)
 
-        await asyncio.sleep(1)
+    await animation.edit_text(
+        "✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs..."
+    )
 
-        await animation.edit_text(
-            "✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs..."
-        )
+    await asyncio.sleep(1)
 
-        await asyncio.sleep(1)
+    user_tokens[user_id] += 50
 
-        user_tokens[user_id] += 50
+    total = user_tokens[user_id]
 
-        total = user_tokens[user_id]
-
-        text = f"""
+    await animation.edit_text(f"""
 ✦ 𝗖𝗥𝗘𝗗𝗜𝗧𝗦 𝗖𝗟𝗔𝗜𝗠𝗘𝗗!
 
 ◍ ᴘʀᴇᴠ ᴛᴏᴋᴇɴs: {prev}
@@ -748,12 +747,7 @@ async def gen_token(_, msg):
 ◍ ᴛᴏᴛᴀʟ ᴛᴏᴋᴇɴs: {total}
 
 ⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ.
-"""
-
-        await animation.edit_text(text)
-
-    except Exception as e:
-        print("GENTOKEN ERROR:", e)
+""")
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
