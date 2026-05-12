@@ -699,62 +699,61 @@ async def tokens_cmd(_, msg):
 
 TOKEN_GROUP_ID = -1003124317181
 
-@bot.on_message(filters.command("gentoken", prefixes=["/", "!", "."]) & filters.group)
+@bot.on_message(filters.command("gentoken") & filters.group)
+async def gen_token(_, msg):
+
+    print("GENTOKEN DETECTED")
+
     try:
 
-        if not msg.from_user:
-            print("❌ GENTOKEN IGNORED (anonymous/system message)")
+        if int(msg.chat.id) != int(TOKEN_GROUP_ID):
             return await msg.reply(
-                 "❌ Please disable anonymous admin mode and try again"
+                "❌ GᴇɴTᴏᴋᴇɴ Oɴʟʏ Wᴏʀᴋs Iɴ Oғғɪᴄɪᴀʟ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ"
             )
 
         user_id = msg.from_user.id
-
-        print("GENTOKEN DETECTED")
-        print("CHAT ID =", msg.chat.id)
-
-        if int(msg.chat.id) != int(TOKEN_GROUP_ID):
-            return await msg.reply("❌ GᴇɴTᴏᴋᴇɴ Oɴʟʏ Wᴏʀᴋs Iɴ Oғғɪᴄɪᴀʟ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ @AU_Bot_Discussion")
-
-        today = datetime.date.today()
-
-        if user_id in user_gentoken_time:
-            if user_gentoken_time[user_id] == today:
-                return await msg.reply(
-                    "ʏᴏᴜ ʜᴀᴠᴇ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍᴇᴅ ʏᴏᴜʀ ғʀᴇᴇ ᴛᴏᴋᴇɴs ᴛᴏᴅᴀʏ! ᴛʀʏ ᴀɢᴀɪɴ ᴛᴏᴍᴏʀʀᴏᴡ... 🙃"
-                )
-
-        user_gentoken_time[user_id] = today
 
         if user_id not in user_tokens:
             user_tokens[user_id] = 0
 
         prev = user_tokens[user_id]
 
-        animation = await msg.reply("🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs...")
+        animation = await msg.reply(
+            "🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs..."
+        )
 
         await asyncio.sleep(1)
-        await animation.edit_text("⚡ Pʀᴏᴄᴇssɪɴɢ...")
-        await asyncio.sleep(1)
-        await animation.edit_text("✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs...")
-
-        user_tokens[user_id] += 50
-        total = user_tokens[user_id]
 
         await animation.edit_text(
-            f"""
+            "⚡ Pʀᴏᴄᴇssɪɴɢ..."
+        )
+
+        await asyncio.sleep(1)
+
+        await animation.edit_text(
+            "✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs..."
+        )
+
+        await asyncio.sleep(1)
+
+        user_tokens[user_id] += 50
+
+        total = user_tokens[user_id]
+
+        text = f"""
 ✦ 𝗖𝗥𝗘𝗗𝗜𝗧𝗦 𝗖𝗟𝗔𝗜𝗠𝗘𝗗!
 
 ◍ ᴘʀᴇᴠ ᴛᴏᴋᴇɴs: {prev}
 ◍ ɴᴇᴡ ᴛᴏᴋᴇɴs ᴀᴅᴅᴇᴅ: 50
 ◍ ᴛᴏᴛᴀʟ ᴛᴏᴋᴇɴs: {total}
 
-⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ
+⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴅᴀɪʟʏ ᴛᴏᴋᴇɴ ʙᴀʟᴀɴᴄᴇ.
 """
-        )
+
+        await animation.edit_text(text)
 
     except Exception as e:
-        print("GENTOKEN ERROR:", repr(e))
+        print("GENTOKEN ERROR:", e)
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
