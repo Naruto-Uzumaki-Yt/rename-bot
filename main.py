@@ -694,9 +694,10 @@ async def tokens_cmd(_, msg):
 """
 
     await msg.reply(text)
+    
 # ---------------- GENTOKEN ---------------- #
 
-TOKEN_GROUP_ID = -1003124317181
+TOKEN_GROUP_ID = -1003124317181  # your official token group id
 
 @bot.on_message(filters.command("gentoken") & filters.group)
 async def gen_token(_, msg):
@@ -704,96 +705,96 @@ async def gen_token(_, msg):
     try:
         print("GENTOKEN DETECTED")
 
-        # ignore anonymous admins / channel messages
-        if msg.from_user is None:
-            print("❌ Anonymous admin detected")
-            return await msg.reply(
-                "❌ Anonymous admins cannot use this command.\n\nDisable anonymous admin mode and try again."
-            )
+        # Ignore anonymous admins / system messages
+        if not msg.from_user:
+            print("❌ GENTOKEN IGNORED (anonymous/system message)")
+            return
 
-        # only allowed group
+        # Only official token group
         if int(msg.chat.id) != int(TOKEN_GROUP_ID):
-            return await msg.reply(
+            return await msg.reply_text(
                 "❌ This command works only in official token group."
             )
 
         user_id = msg.from_user.id
+        user_name = msg.from_user.first_name
 
-        # create token balance if not exists
+        # Create token balance if missing
         if user_id not in user_tokens:
             user_tokens[user_id] = 0
 
-        # cooldown system (optional)
         now = int(time.time())
 
+        # Cooldown system
         if user_id in user_gentoken_time:
 
             last_used = user_gentoken_time[user_id]
 
-            remaining = 300 - (now - last_used)   # 5 min cooldown
+            remaining = 300 - (now - last_used)
 
             if remaining > 0:
 
                 mins, secs = divmod(remaining, 60)
 
-                return await msg.reply(
+                return await msg.reply_text(
                     f"""
-⏳ Yᴏᴜ ᴀʟʀᴇᴀᴅʏ ᴄʟᴀɪᴍᴇᴅ ᴛᴏᴋᴇɴs!
+⏳ Token already claimed!
 
-⌛ Tʀʏ ᴀɢᴀɪɴ ɪɴ:
-{mins}ᴍ {secs}s
+🕒 Try again in:
+{mins}m {secs}s
 """
                 )
 
-        prev = user_tokens[user_id]
-
-        animation = await msg.reply(
-            "🔄 Gᴇɴᴇʀᴀᴛɪɴɢ Tᴏᴋᴇɴs..."
-        )
+        # Animation
+        m = await msg.reply_text("🔄 Generating Tokens...")
 
         await asyncio.sleep(1)
 
-        await animation.edit_text(
-            "⚡ Pʀᴏᴄᴇssɪɴɢ..."
-        )
+        await m.edit_text("⚡ Processing Request...")
 
         await asyncio.sleep(1)
 
-        await animation.edit_text(
-            "✨ Aᴅᴅɪɴɢ Tᴏᴋᴇɴs..."
-        )
+        await m.edit_text("✨ Adding 50 Tokens...")
 
         await asyncio.sleep(1)
 
-        # add tokens
+        # Add tokens
+        prev_tokens = user_tokens[user_id]
+
         user_tokens[user_id] += 50
 
-        # save cooldown time
+        total_tokens = user_tokens[user_id]
+
+        # Save cooldown time
         user_gentoken_time[user_id] = now
 
-        total = user_tokens[user_id]
+        # Success message
+        await m.edit_text(
+            f"""
+✅ TOKENS GENERATED SUCCESSFULLY
 
-        await animation.edit_text(f"""
-✦ 𝗖𝗥𝗘𝗗𝗜𝗧𝗦 𝗖𝗟𝗔𝗜𝗠𝗘𝗗!
+👤 User: {user_name}
+🪙 Previous Tokens: {prev_tokens}
+➕ Added: 50
+💰 Total Tokens: {total_tokens}
 
-◍ ᴘʀᴇᴠ ᴛᴏᴋᴇɴs: {prev}
-◍ ɴᴇᴡ ᴛᴏᴋᴇɴs ᴀᴅᴅᴇᴅ: 50
-◍ ᴛᴏᴛᴀʟ ᴛᴏᴋᴇɴs: {total}
-
-⧗ ᴜsᴇ /tokens ɪɴ ᴘʀɪᴠᴀᴛᴇ ᴄʜᴀᴛ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ʙᴀʟᴀɴᴄᴇ.
-""")
+⚡ Use /tokens in bot PM to check balance.
+"""
+        )
 
         print(f"✅ Tokens added to {user_id}")
 
     except Exception as e:
+
         print("GENTOKEN ERROR:", e)
 
         try:
-            await msg.reply(
-                f"❌ Token generation failed.\n\nError:\n`{e}`"
+            await msg.reply_text(
+                f"❌ Token generation failed.\n\n`{e}`"
             )
         except:
             pass
+            
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
 async def save_thumb(_, msg):
