@@ -701,11 +701,12 @@ TOKEN_GROUP_ID = -1003124317181
 @bot.on_message(filters.command("gentoken") & filters.group)
 async def gen_token(_, msg):
 
-    if not msg.from_user:
-        return
-
     print("GENTOKEN DETECTED")
-    print("CHAT ID =", msg.chat.id)
+
+    # ignore anonymous admin/system messages
+    if not msg.from_user:
+        print("❌ GENTOKEN IGNORED (anonymous/system message)")
+        return
 
     if int(msg.chat.id) != int(TOKEN_GROUP_ID):
         return
