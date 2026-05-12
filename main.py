@@ -55,8 +55,6 @@ user_mode = {}
 download_last_edit = 0
 upload_last_edit = 0
 
-user_gentoken_time = {}
-
 def parse_duration(value: str):
     value = value.lower().strip()
 
@@ -134,8 +132,6 @@ print("UPDATE_CHANNEL:", UPDATE_CHANNEL)
 from database import *
 
 dump_channels = {}
-user_tokens = {}
-user_streaks = {}
 
 from utils import progress_bar
 from ffmpeg_utils import add_metadata
@@ -434,129 +430,6 @@ async def metadata(_, msg):
         disable_web_page_preview=True
     )
 
-# -----------MY PlAN-------------- #
-@bot.on_message(filters.command("myplan"))
-async def myplan(_, msg):
-
-    user = await get_user(msg.from_user.id) or {}
-    status = "Premium" if user.get("premium") else "Free"
-
-    # token info
-    user_id = msg.from_user.id
-
-    if user_id not in user_tokens:
-        user_tokens[user_id] = 0
-
-    tokens = user_tokens[user_id]
-
-    if status == "Premium":
-
-        expiry = user.get("premium_expiry")
-
-        if expiry:
-            remaining = expiry - int(time.time())
-
-            days = remaining // 86400
-            hours = (remaining % 86400) // 3600
-
-            expiry_text = f"{days}D {hours}H Remaining"
-        else:
-            expiry_text = "Unlimited"
-
-        text = f"""
-✨ ʜᴇʏ {msg.from_user.first_name},
-
-💎 Yᴏᴜ ᴄᴜʀʀᴇɴᴛʟʏ ʜᴀᴠᴇ ᴀɴ ᴀᴄᴛɪᴠᴇ Pʀᴇᴍɪᴜᴍ Pʟᴀɴ ✔
-
-◍ Sᴛᴀᴛᴜs : Pʀᴇᴍɪᴜᴍ ᴜsᴇʀ
-◍ Tᴏᴋᴇɴs : Uɴʟɪᴍɪᴛᴇᴅ ♾
-◍ Exᴘɪʀʏ : {expiry_text}
-
-🚀 𝗣ʀᴇᴍɪᴜᴍ 𝗕ᴇɴᴇғɪᴛ𝘀 :
-› 𝗨𝗻𝗹𝗶𝗺𝗶𝘁𝗲𝗱 𝗥𝗲𝗻𝗮𝗺𝗲𝘀
-› 𝗙𝗮𝘀𝘁𝗲𝗿 𝗨𝗽𝗹𝗼𝗮𝗱 𝗦𝗽𝗲𝗲𝗱
-› 𝗥𝗲𝗻𝗮𝗺𝗲 𝗨𝗽𝘁𝗼 𝟮𝗚𝗕
-› 𝗡𝗼 𝗗𝗮𝗶𝗹𝘆 𝗟𝗶𝗺𝗶𝘁𝘀
-
-❤️ Tʜᴀɴᴋs Fᴏʀ Bᴜʏɪɴɢ Pʀᴇᴍɪᴜᴍ!
-"""
-
-    else:
-
-        text = f"""
-👋 ʜᴇʏ {msg.from_user.first_name},
-
-❌ Yᴏᴜ Dᴏ Nᴏᴛ Hᴀᴠᴇ Aɴʏ Aᴄᴛɪᴠᴇ Pʀᴇᴍɪᴜᴍ Pʟᴀɴ
-
-◍ Sᴛᴀᴛᴜs : Fʀᴇᴇ Usᴇʀ
-◍ Tᴏᴋᴇɴs : {tokens}
-
-⚠️ 𝖥𝗋𝖾𝖾 𝖴𝗌𝖾𝗋𝗌 𝖭𝖾𝖾𝖽 𝖳𝗈𝗄𝖾𝗇𝗌 𝖥𝗈𝗋 𝖱𝖾𝗇𝖺𝗆𝗂𝗇𝗀
-
-⧗ Hᴏᴡ Tᴏ Gᴇᴛ Tᴏᴋᴇɴs?
-• Usᴇ /gentoken ɪɴ ɢʀᴏᴜᴘs
-• Cʟᴀɪᴍ ᴅᴀɪʟʏ ʀᴇᴡᴀʀᴅs
-• Rᴇғᴇʀ ғʀɪᴇɴᴅs
-
-🚀 Uᴘɢʀᴀᴅᴇ Tᴏ Pʀᴇᴍɪᴜᴍ Fᴏʀ:
-› Uɴʟɪᴍɪᴛᴇᴅ Rᴇɴᴀᴍᴇs
-› Rᴇɴᴀᴍᴇ Uᴘᴛᴏ 𝟸GB
-› Fᴀsᴛᴇʀ Sᴘᴇᴇᴅ
-› Nᴏ Tᴏᴋᴇɴ Lɪᴍɪᴛs
-"""
-
-    buttons = InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton(
-                "💎 Bᴜʏ Pʀᴇᴍɪᴜᴍ",
-                url="https://t.me/Mr_Mohammed_29"
-            )
-        ]
-    ])
-
-    await msg.reply(text, reply_markup=buttons)
-
-# ------------ plans ---------------#
-@bot.on_message(filters.command("plans"))
-async def plans(_, msg):
-
-    text = f"""
-👋 ʜᴇʏ {msg.from_user.first_name},
-
-💎 𝗣𝗥𝗘𝗠𝗜𝗨𝗠 𝗣𝗟𝗔𝗡𝗦
-
-🚀 Pʀᴇᴍɪᴜᴍ Fᴇᴀᴛᴜʀᴇs :
-
-› Uɴʟɪᴍɪᴛᴇᴅ Rᴇɴᴀᴍɪɴɢ
-› Rᴇɴᴀᴍᴇ Uᴘᴛᴏ 𝟸GB Fɪʟᴇs
-› Nᴏ Tᴏᴋᴇɴ Lɪᴍɪᴛs
-› Fᴀsᴛᴇʀ Uᴘʟᴏᴀᴅ & Dᴏᴡɴʟᴏᴀᴅ
-› Eᴀʀʟʏ Aᴄᴄᴇss Fᴇᴀᴛᴜʀᴇs
-› Pʀᴇᴍɪᴜᴍ Sᴜᴘᴘᴏʀᴛ
-
-🎟 Fʀᴇᴇ Usᴇʀs:
-• Nᴇᴇᴅ Tᴏᴋᴇɴs Fᴏʀ Rᴇɴᴀᴍᴇ
-• Usᴇ /ɢᴇɴᴛᴏᴋᴇɴ Tᴏ Eᴀʀɴ Tᴏᴋᴇɴs
-
-💡 Cᴏᴍᴍᴀɴᴅs:
-➛ /token - Cʜᴇᴄᴋ Tᴏᴋᴇɴ Bᴀʟᴀɴᴄᴇ
-➛ /myplan - Cʜᴇᴄᴋ Yᴏᴜʀ Pʟᴀɴ
-
-⚡ Uᴘɢʀᴀᴅᴇ Nᴏᴡ Aɴᴅ Eɴɪᴏʏ Uɴʟɪᴍɪᴛᴇᴅ Rᴇɴᴀᴍɪɴɢ!
-"""
-
-    buttons = InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton(
-                "💎 Uᴘɢʀᴀᴅᴇ Tᴏ Pʀᴇᴍɪᴜᴍ",
-                url="https://t.me/Mr_Mohammed_29"
-            )
-        ]
-    ])
-
-    await msg.reply(text, reply_markup=buttons)
-
-    
 # ---------------- METADATA SETTERS ----------------
 @bot.on_message(filters.command("settitle"))
 async def settitle(_, msg):
@@ -654,127 +527,6 @@ async def del_dump(_, msg):
         del dump_channels[msg.from_user.id]
 
     await msg.reply("✅ Dump Channel Deleted")
-
-# ---------------- TOKEN COMMAND ---------------- #
-
-@bot.on_message(filters.command(["token", "tokens"]))
-async def tokens_cmd(_, msg):
-
-    if not msg.from_user:
-        return await msg.reply("❌ Cannot fetch tokens for anonymous/system messages")
-
-    user_id = msg.from_user.id
-
-    if user_id not in user_tokens:
-        user_tokens[user_id] = 0
-
-    if user_id not in user_streaks:
-        user_streaks[user_id] = 0
-
-    user = await get_user(user_id) or {}
-
-    status = "Premium User" if user.get("premium") else "Free User"
-
-    tokens = user_tokens[user_id]
-    streak = user_streaks[user_id]
-
-    text = f"""
-✦ 𝗝𝗜𝗡-𝗪𝗢𝗢 𝗧𝗢𝗞𝗘𝗡𝗦
-
-◍ Usᴇʀ: {msg.from_user.first_name}
-◍ Bᴀʟᴀɴᴄᴇ: {tokens} Tᴏᴋᴇɴs
-◍ Sᴛʀᴇᴀᴋ: {streak} Dᴀʏs
-◍ Sᴛᴀᴛᴜs: {status}
-
-⧗ Hᴏᴡ ᴛᴏ ᴇᴀʀɴ?
-• Cʟᴀɪᴍ ʏᴏᴜʀ ᴅᴀɪʟʏ ʀᴇᴡᴀʀᴅ ʙᴇʟᴏᴡ!
-• Usᴇ /gentoken ɪɴ ɢʀᴏᴜᴘ ᴛᴏ ɢᴇᴛ 50 ᴛᴏᴋᴇɴs.
-• Rᴇғᴇʀ ғʀɪᴇɴᴅs ᴠɪᴀ /refer ғᴏʀ ᴘᴇʀᴍᴀɴᴇɴᴛ ᴛᴏᴋᴇɴs.
-≡ ᴜᴘɢʀᴀᴅᴇ ᴛᴏ ᴘʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ʀᴇɴᴀᴍᴇs
-"""
-
-    await msg.reply(text)
-    
-# ---------------- GENTOKEN ---------------- #
-
-TOKEN_GROUP_ID = -1003124317181
-
-@bot.on_message(filters.command("gentoken") & filters.group)
-async def gen_token(_, msg):
-
-    try:
-        print("GENTOKEN DETECTED")
-
-        # ignore anonymous admins
-        if not msg.from_user:
-            return await msg.reply_text(
-                "❌ Disable Anonymous Admin Mode First."
-            )
-
-        # only official group
-        if int(msg.chat.id) != int(TOKEN_GROUP_ID):
-            return await msg.reply_text(
-                "❌ This command works only in official token group."
-            )
-
-        user_id = msg.from_user.id
-
-        # create token balance
-        if user_id not in user_tokens:
-            user_tokens[user_id] = 0
-
-        # cooldown
-        now = int(time.time())
-
-        if user_id in user_gentoken_time:
-
-            last = user_gentoken_time[user_id]
-
-            remaining = 300 - (now - last)
-
-            if remaining > 0:
-
-                mins, secs = divmod(remaining, 60)
-
-                return await msg.reply_text(
-                    f"⏳ Try Again In {mins}m {secs}s"
-                )
-
-        # animation
-        x = await msg.reply_text("🔄 Generating Tokens...")
-        await asyncio.sleep(1)
-
-        await x.edit_text("⚡ Processing...")
-        await asyncio.sleep(1)
-
-        await x.edit_text("✨ Adding Tokens...")
-        await asyncio.sleep(1)
-
-        # add token
-        user_tokens[user_id] += 50
-
-        # save cooldown
-        user_gentoken_time[user_id] = now
-
-        total = user_tokens[user_id]
-
-        await x.edit_text(
-            f"""
-✅ TOKENS GENERATED
-
-👤 User : {msg.from_user.mention}
-🎁 Added : 50 Tokens
-💰 Balance : {total} Tokens
-
-Use /tokens in bot PM.
-"""
-        )
-
-        print(f"✅ Token Added -> {user_id}")
-
-    except Exception as e:
-        print("GENTOKEN ERROR:", e)
-        await msg.reply_text(f"❌ Error\n\n{e}")
             
 # ---------------- THUMB ----------------
 @bot.on_message(filters.photo)
@@ -826,51 +578,7 @@ async def cancel_cmd(_, msg):
     else:
         await msg.reply("⚠️ Nᴏ Aᴄᴛɪᴠᴇ Tᴀsᴋ Tᴏ Cᴀɴᴄᴇʟ")
 
-# ---------------- ADMIN ----------------
-def admin(uid):
-    return uid == OWNER_ID
-
-@bot.on_message(filters.command("addpremium"))
-async def addprem(_, msg):
-
-    if not admin(msg.from_user.id):
-        return
-
-    if len(msg.command) < 3:
-        return await msg.reply("𝗿𝗲𝗽𝗹𝘆 𝘄𝗶𝘁𝗵 /addpremium 𝘂𝘀𝗲𝗿 𝗶𝗱 𝗱𝘂𝗿𝗮𝘁𝗶𝗼𝗻 (𝟭𝗵𝗿, 𝟳𝗱, 𝟯𝟬𝗱, 𝟭𝘆𝗿)")
-
-    uid = int(msg.text.split()[1])
-    duration = msg.text.split()[2]
-
-    seconds = parse_duration(duration)
-
-    if not seconds:
-        return await msg.reply("𝗜𝗻𝘃𝗮𝗹𝗶𝗱 𝗙𝗼𝗿𝗺𝗮𝘁 ❌ 𝗨𝘀𝗲 : 1hr / 7d / 30d / 1y")
-
-    expiry = int(time.time()) + seconds
-
-    await set_user(uid, {
-        "premium": True,
-        "premium_expiry": expiry
-    })
-
-    await msg.reply(f"""
-🎉 𝗬𝗼𝘂 𝗮𝗿𝗲 𝗻𝗼𝘄 𝗮 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗨𝘀𝗲𝗿!
-
-👤 Usᴇʀ ID: {uid}
-⏳ Dᴜʀᴀᴛɪᴏɴ: {duration}
-🕒 Exᴘɪʀᴇs Iɴ: {duration}
-
-✨ Sᴛᴀᴛᴜs: 𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗔𝗰𝘁𝗶𝘃𝗮𝘁𝗲𝗱 ✅️
-""")
-
-@bot.on_message(filters.command("remove_premium"))
-async def remprem(_, msg):
-    if not admin(msg.from_user.id):
-        return
-    uid = int(msg.text.split()[1])
-    await set_user(uid, {"premium": False})
-    await msg.reply("𝗣𝗿𝗲𝗺𝗶𝘂𝗺 𝗥𝗲𝗺𝗼𝘃𝗲𝗱")
+#----------- Status ------------#
 
 @bot.on_message(filters.command("status"))
 async def status(_, msg):
@@ -894,7 +602,6 @@ async def status(_, msg):
 ⏱ Uᴘᴛɪᴍᴇ: {get_uptime()}
 ⚡ Pɪɴɢ: {ping}
 🧠 Mᴇᴍᴏʀʏ Usᴀɢᴇ: {get_memory()}
-💎 Pʀᴇᴍɪᴜᴍ: {premium}
 🧾 Vᴇʀsɪᴏɴ: v3.0
 """
 
@@ -945,6 +652,7 @@ async def logs(_, msg):
 
     except:
         await msg.reply("𝗡𝗢 𝗟𝗢𝗚𝗦 𝗙𝗢𝗨𝗡𝗗 ❌")
+        
 # -------------BROADCAST------------ #
 @bot.on_message(filters.command("broadcast"))
 async def broadcast(_, msg):
@@ -983,6 +691,7 @@ async def broadcast(_, msg):
 
     except Exception as e:
         await msg.reply(f"❌ 𝗕𝗿𝗼𝗮𝗱𝗰𝗮𝘀𝘁 𝗘𝗿𝗿𝗼𝗿: {e}")
+        
 # ---------- Callback --------------- #
 @bot.on_callback_query()
 async def cb(_, query: CallbackQuery):
@@ -1106,7 +815,6 @@ async def cb(_, query: CallbackQuery):
         ⏱ Uᴘᴛɪᴍᴇ: {get_uptime()}
         ⚡ Pɪɴɢ: {ping}
         🧠 Mᴇᴍᴏʀʏ Usᴀɢᴇ: {get_memory()}
-        💎 Pʀᴇᴍɪᴜᴍ: {premium}
         🧾 Vᴇʀsɪᴏɴ: v3.0
         """
 
@@ -1153,35 +861,6 @@ async def cb(_, query: CallbackQuery):
  
             file = msg.document or msg.video
             is_video = msg.video is not None  
-
-            # -------- TOKEN CHECK -------- #
-
-            user_data = await get_user(user_id) or {}
-            is_premium = user_data.get("premium", False)
-
-            if user_id not in user_tokens:
-                user_tokens[user_id] = 0
-
-            # Free users need token
-            if not is_premium:
-
-                if user_tokens[user_id] <= 0:
-                    return await query.message.edit_text(
-                        f"""
-            ❌ 𝗡𝗢 𝗧𝗢𝗞𝗘𝗡𝗦 𝗟𝗘𝗙𝗧!
-
-            ◍ Yᴏᴜʀ Tᴏᴋᴇɴs: {user_tokens[user_id]}
-            ◍ Sᴛᴀᴛᴜs: Free User
-
-            ⧗ Hᴏᴡ ᴛᴏ ɢᴇᴛ ᴍᴏʀᴇ?
-            • Usᴇ /gentoken ɪɴ ɢʀᴏᴜᴘ
-            • Cʟᴀɪᴍ ᴅᴀɪʟʏ ʀᴇᴡᴀʀᴅ
-            • Bᴜʏ Pʀᴇᴍɪᴜᴍ ғᴏʀ ᴜɴʟɪᴍɪᴛᴇᴅ ʀᴇɴᴀᴍᴇs
-            """
-                    )
-
-                # remove 1 token per rename
-                user_tokens[user_id] -= 1
 
             log_event(f"User {user_id} uploaded file: {file.file_name}")
 
