@@ -699,9 +699,7 @@ async def tokens_cmd(_, msg):
 
 TOKEN_GROUP_ID = -1003124317181
 
-@bot.on_message(filters.command(["gentoken", "gentoken@Jinwoo_Rename_bot"]))
-async def gen_token(_, msg):
-
+@bot.on_message(filters.command("gentoken", prefixes=["/", "!", "."]) & filters.group)
     try:
 
         if not msg.from_user:
